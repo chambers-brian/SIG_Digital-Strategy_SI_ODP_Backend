@@ -8,6 +8,7 @@ from dataactcore.utils.responseException import ResponseException
 from dataactcore.utils.cloudLogger import CloudLogger
 from dataactcore.utils.jobQueue import enqueue
 from dataactvalidator.validation_handlers.validationError import ValidationError
+from dataactbroker.handlers.managerProxy import ManagerProxy
 
 
 class JobTrackerInterface(BaseInterface):
@@ -223,7 +224,9 @@ class JobTrackerInterface(BaseInterface):
                 self.markJobStatus(depJobId, 'ready')
                 # add to the job queue
                 CloudLogger.log("Sending job {} to the job manager".format(str(depJobId)))
-                enqueue.delay(depJobId)
+                mp = ManagerProxy()
+                mp.sendJobRequest(depJobId)
+                #enqueue.delay(depJobId)
 
     def runChecks(self,jobId):
         """ Checks that specified job has no unsatisfied prerequisites

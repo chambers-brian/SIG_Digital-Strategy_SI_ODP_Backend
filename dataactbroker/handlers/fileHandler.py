@@ -37,7 +37,7 @@ class FileHandler:
     s3manager -- instance of s3UrlHandler, manages calls to S3
     """
 
-    FILE_TYPES = ["appropriations","award_financial","program_activity"]
+    FILE_TYPES = ["appropriations","award_financial","program_activity", "derivative","non_derivative"]
     EXTERNAL_FILE_TYPES = ["award", "award_procurement", "awardee_attributes", "sub_award"]
     VALIDATOR_RESPONSE_FILE = "validatorResponse"
     STATUS_MAP = {"waiting":"invalid", "ready":"invalid", "running":"waiting", "finished":"finished", "invalid":"failed", "failed":"failed"}
@@ -334,6 +334,7 @@ class FileHandler:
             # Get jobs in this submission
             jobs = self.jobManager.getJobsBySubmission(submissionId)
 
+
             # Build dictionary of submission info with info about each job
             submissionInfo = {}
             submissionInfo["jobs"] = []
@@ -341,6 +342,8 @@ class FileHandler:
             submissionInfo["reporting_period_start_date"] = self.interfaces.jobDb.getStartDate(submission)
             submissionInfo["reporting_period_end_date"] = self.interfaces.jobDb.getEndDate(submission)
             submissionInfo["created_on"] = self.interfaces.jobDb.getFormattedDatetimeBySubmissionId(submissionId)
+            submissionInfo["test_column"] = "testing123"
+
             # Include number of errors in submission
             submissionInfo["number_of_errors"] = self.interfaces.errorDb.sumNumberOfErrorsForJobList(jobs, self.interfaces.validationDb)
             submissionInfo["number_of_rows"] = self.interfaces.jobDb.sumNumberOfRowsForJobList(jobs)

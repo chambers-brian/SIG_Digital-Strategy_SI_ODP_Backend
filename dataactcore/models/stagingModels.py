@@ -21,6 +21,52 @@ def concatTas(context):
     tas = '{}{}{}{}{}{}{}'.format(tas1, tas2, tas3, tas4, tas5, tas6, tas7)
     return tas
 
+# New table classes
+class NonDerivative(Base):
+    """Model for the non_derivative table."""
+    __tablename__ = "non_derivative"
+
+    non_derivative_id = Column(Integer, primary_key=True)
+    submission_id = Column(Integer, nullable=False, index=True)
+    job_id = Column(Integer, nullable=False, index=True)
+    row_number = Column(Integer, nullable=False)
+    agency_identifier = Column(Text)
+    security_title = Column(Text)
+    amount_of_securities = Column(Numeric)
+    ownership_form = Column(Text)
+    nature_of_ownership = Column(Text)
+
+    def __init__(self, **kwargs):
+        # broker is set up to ignore extra columns in submitted data
+        # so get rid of any extraneous kwargs before instantiating
+        cleanKwargs = {k: v for k, v in kwargs.items() if hasattr(self, k)}
+        super(NonDerivative, self).__init__(**cleanKwargs)
+
+class Derivative(Base):
+    """Model for the derivative table."""
+    __tablename__ = "derivative"
+
+    derivative_id = Column(Integer, primary_key=True)
+    submission_id = Column(Integer, nullable=False, index=True)
+    job_id = Column(Integer, nullable=False, index=True)
+    row_number = Column(Integer, nullable=False)
+    agency_identifier = Column(Text)
+    security_title = Column(Text)
+    date_exercisable = Column(Text)
+    expiration_date = Column(Text)
+    title_of_securities_underlying = Column(Text)
+    amount_of_securities = Column(Numeric)
+    conversion_exercise_price = Column(Numeric)
+    ownership_form = Column(Text)
+    nature_of_ownership = Column(Text)
+
+    def __init__(self, **kwargs):
+        # broker is set up to ignore extra columns in submitted data
+        # so get rid of any extraneous kwargs before instantiating
+        cleanKwargs = {k: v for k, v in kwargs.items() if hasattr(self, k)}
+        super(Derivative, self).__init__(**cleanKwargs)
+
+# Their code
 
 class Appropriation(Base):
     """Model for the appropriation table."""

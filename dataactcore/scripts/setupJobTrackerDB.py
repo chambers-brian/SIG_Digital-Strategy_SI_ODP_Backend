@@ -46,11 +46,12 @@ def insertCodes(sess):
         (4, 'award', '', 'D2'),
         (5, 'award_procurement', '', 'D1'),
         (6, "awardee_attributes", "", 'E'),
-        (7, "sub_award", "", 'F')]
+        (7, "sub_award", "", 'F'),
+        (8, 'derivative', '', 'X'),
+        (9,'non_derivative', '', 'Y')]
     for ft in fileTypeList:
         fileType = FileType(file_type_id=ft[0], name=ft[1], description=ft[2], letter_name=ft[3])
         sess.merge(fileType)
-
 
 if __name__ == '__main__':
     setupJobTrackerDB()

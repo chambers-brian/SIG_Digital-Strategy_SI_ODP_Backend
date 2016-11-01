@@ -17,7 +17,9 @@ class SchemaLoader(object):
         "award": "awardFields.csv",
         "award_financial": "awardFinancialFields.csv",
         "program_activity": "programActivityFields.csv",
-        "award_procurement": "awardProcurementFields.csv"}
+        "award_procurement": "awardProcurementFields.csv",
+        "derivative": "derivativeFields.csv",
+        "non_derivative": "nonDerivativeFields.csv"}
 
     @staticmethod
     def loadFields(fileTypeName, schemaFileName):

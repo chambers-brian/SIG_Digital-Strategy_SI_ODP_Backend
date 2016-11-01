@@ -19,7 +19,7 @@ class JobHandler(JobTrackerInterface):
     """
 
     fiscalStartMonth = 10
-    metaDataFieldMap = {"cgac_code":"cgac_code","reporting_period_start_date":"reporting_start_date","reporting_period_end_date":"reporting_end_date","is_quarter":"is_quarter_format"}
+    metaDataFieldMap = {"cgac_code":"cgac_code","reporting_period_start_date":"reporting_start_date","reporting_period_end_date":"reporting_end_date","is_quarter":"is_quarter_format","test_column":"test_column"}
 
     def getSubmissionById(self,submissionId):
         """ Return submission object that matches ID """

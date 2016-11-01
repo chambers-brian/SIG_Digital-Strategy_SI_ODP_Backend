@@ -62,6 +62,9 @@ class Submission(Base):
     publish_status = relationship("PublishStatus", uselist = False)
     number_of_errors = Column(Integer)
     number_of_warnings = Column(Integer)
+    test_column = Column(Text)
+
+
 
 class Job(Base):
     __tablename__ = "job"

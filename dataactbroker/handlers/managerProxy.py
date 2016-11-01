@@ -1,7 +1,7 @@
 import requests
 import json
 import os
-from urlparse import urljoin
+#from urlparse import urljoin
 import inspect
 from dataactcore.config import CONFIG_SERVICES
 
@@ -19,10 +19,10 @@ class ManagerProxy(object):
         validator_host = str(CONFIG_SERVICES['validator_host'])
         validator_port = str(CONFIG_SERVICES['validator_port'])
         if validator_port:
-            validator_url = 'http://{}:{}/validate_threaded/'.format(
+            validator_url = 'http://{}:{}/validate/'.format(
                 validator_host, validator_port)
         else:
-            validator_url = 'http://{}/validate_threaded/'.format(
+            validator_url = 'http://{}/validate/'.format(
                 validator_host)
         return requests.request(method="POST", url=validator_url,
             data=self.jobJson(jobId), headers = self.JSON_HEADER)
