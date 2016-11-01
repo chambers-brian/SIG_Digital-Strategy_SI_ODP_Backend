@@ -62,9 +62,12 @@ class Submission(Base):
     publish_status = relationship("PublishStatus", uselist = False)
     number_of_errors = Column(Integer)
     number_of_warnings = Column(Integer)
-    test_column = Column(Text)
-
-
+    reporterName = Column(Text)
+    eventDate = Column(Text)
+    issuerName = Column(Text)
+    relationship = Column(Text)
+    ifAmendment = Column(Text)
+    groupFiling = Column(Text)
 
 class Job(Base):
     __tablename__ = "job"

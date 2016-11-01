@@ -43,3 +43,8 @@ dataactvalidator/config/sf_133*.csv
 runBothTestPackages.py
 dataactcore/local_config.yml
 dataactcore/local_secrets.yml
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

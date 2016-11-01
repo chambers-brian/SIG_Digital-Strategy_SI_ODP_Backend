@@ -1,12 +1,12 @@
 from dataactcore.models.validationInterface import ValidationInterface
-from dataactcore.models.stagingModels import Appropriation, ObjectClassProgramActivity, AwardFinancial, AwardFinancialAssistance, AwardProcurement
+from dataactcore.models.stagingModels import Appropriation, ObjectClassProgramActivity, AwardFinancial, AwardFinancialAssistance, AwardProcurement, Derivative, NonDerivative
 from dataactcore.utils.responseException import ResponseException
 from dataactcore.utils.statusCode import StatusCode
 
 
 class ValidatorStagingInterface(ValidationInterface):
     """Manages all interaction with the staging tables in the validation database."""
-    MODEL_MAP = {"award":AwardFinancialAssistance,"award_financial":AwardFinancial,"appropriations":Appropriation,"program_activity":ObjectClassProgramActivity,"award_procurement":AwardProcurement}
+    MODEL_MAP = {"award":AwardFinancialAssistance,"award_financial":AwardFinancial,"appropriations":Appropriation,"program_activity":ObjectClassProgramActivity,"award_procurement":AwardProcurement,"derivative":Derivative, "non_derivative":NonDerivative}
 
     def insertSubmissionRecordByFileType(self, record, fileType):
         """Insert a submitted file row into its corresponding staging table
