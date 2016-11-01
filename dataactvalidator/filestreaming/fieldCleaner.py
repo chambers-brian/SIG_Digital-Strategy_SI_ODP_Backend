@@ -1,5 +1,4 @@
 import csv
-from decimal import *
 from dataactcore.utils.stringCleaner import StringCleaner
 
 class FieldCleaner(StringCleaner):
@@ -168,3 +167,4 @@ if __name__ == '__main__':
     FieldCleaner.cleanFile("../config/awardFieldsRaw.csv","../config/awardFields.csv")
     FieldCleaner.cleanFile("../config/derivativeFieldsRaw.csv","../config/derivativeFields.csv")
     FieldCleaner.cleanFile("../config/nonDerivativeFieldsRaw.csv","../config/nonDerivativeFields.csv")
+

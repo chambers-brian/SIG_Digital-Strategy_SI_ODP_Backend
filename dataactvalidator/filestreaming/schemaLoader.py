@@ -1,8 +1,9 @@
 import csv
 import os
 import logging
-from dataactcore.interfaces.db import databaseSession
+from dataactcore.interfaces.db import GlobalDB
 from dataactcore.models.validationModels import FileColumn, FileTypeValidation, FieldType
+from dataactvalidator.app import createApp
 from dataactvalidator.filestreaming.fieldCleaner import FieldCleaner
 
 logger = logging.getLogger(__name__)
@@ -24,7 +25,8 @@ class SchemaLoader(object):
     @staticmethod
     def loadFields(fileTypeName, schemaFileName):
         """Load specified schema from a .csv."""
-        with databaseSession() as sess:
+        with createApp().app_context():
+            sess = GlobalDB.db().session
 
             # get file type object for specified fileTypeName
             fileType = sess.query(FileTypeValidation).filter(FileTypeValidation.name == fileTypeName).one()

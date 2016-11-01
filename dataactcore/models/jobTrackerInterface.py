@@ -1,14 +1,29 @@
 import traceback
 from uuid import uuid4
+from sqlalchemy import func, or_
 from sqlalchemy.orm import joinedload
+from dataactcore.interfaces.db import GlobalDB
 from dataactcore.models.baseInterface import BaseInterface
 from dataactcore.models.jobModels import Job, JobDependency, JobStatus, JobType, Submission, FileType, PublishStatus, FileGenerationTask
+from dataactcore.models.stagingModels import AwardFinancial
 from dataactcore.utils.statusCode import StatusCode
 from dataactcore.utils.responseException import ResponseException
 from dataactcore.utils.cloudLogger import CloudLogger
 from dataactcore.utils.jobQueue import enqueue
 from dataactvalidator.validation_handlers.validationError import ValidationError
 from dataactbroker.handlers.managerProxy import ManagerProxy
+
+def obligationStatsForSubmission(submission_id):
+    sess = GlobalDB.db().session
+    base_query = sess.query(func.sum(AwardFinancial.transaction_obligated_amou)).\
+        filter(AwardFinancial.submission_id == submission_id)
+    procurement = base_query.filter(AwardFinancial.piid != None)
+    fin_assist = base_query.filter(or_(AwardFinancial.fain != None, AwardFinancial.uri != None))
+    return {
+        "total_obligations": float(base_query.scalar() or 0),
+        "total_procurement_obligations": float(procurement.scalar() or 0),
+        "total_assistance_obligations": float(fin_assist.scalar() or 0)
+    }
 
 
 class JobTrackerInterface(BaseInterface):
@@ -50,18 +65,6 @@ class JobTrackerInterface(BaseInterface):
         """ Return submission object """
         submissionId = self.getSubmissionId(jobId)
         return self.session.query(Submission).filter(Submission.submission_id == submissionId).one()
-
-    def getReportPath(self,jobId):
-        """ Return the filename for the error report.  Does not include the folder to avoid conflicting with the S3 getSignedUrl method. """
-        return  "submission_" + str(self.getSubmissionId(jobId)) + "_" + self.getFileType(jobId) + "_error_report.csv"
-
-    def getWarningReportPath(self, jobId):
-        """ Return the filename for the warning report.  Does not include the folder to avoid conflicting with the S3 getSignedUrl method. """
-        return  "submission_" + str(self.getSubmissionId(jobId)) + "_" + self.getFileType(jobId) + "_warning_report.csv"
-
-    def getCrossFileReportPath(self,submissionId):
-        """ Returns the filename for the cross file error report. """
-        return "".join(["submission_",str(submissionId),"_cross_file_error_report.csv"])
 
     def getJobsBySubmission(self,submissionId):
         """ Get list of jobs that are part of the specified submission
@@ -253,10 +256,6 @@ class JobTrackerInterface(BaseInterface):
         """ Get number of rows in file for job matching ID """
         return self.getJobById(jobId).number_of_rows
 
-    def getNumberOfValidRowsById(self, jobId):
-        """Get number of file's rows that passed validations."""
-        return self.getJobById(jobId).number_of_rows_valid
-
     def setFileSizeById(self,jobId, fileSize):
         """ Set file size for job matching ID """
         job = self.getJobById(jobId)
@@ -308,7 +307,7 @@ class JobTrackerInterface(BaseInterface):
         return self.runUniqueQuery(query, "No submission with that ID", "Multiple submissions with that ID")
 
     def populateSubmissionErrorInfo(self, submissionId):
-        """ Set number of errors and warnings for submission """
+        """Deprecated: moved to function_bag.py."""
         submission = self.getSubmissionById(submissionId)
         # TODO find where interfaces is set as an instance variable which overrides the static variable, fix that and then remove this line
         self.interfaces = BaseInterface.interfaces
@@ -317,14 +316,7 @@ class JobTrackerInterface(BaseInterface):
         self.session.commit()
 
     def setJobNumberOfErrors(self, jobId, numberOfErrors, errorType):
-        """ Label nuber of errors or warnings for specified job
-
-        Args:
-            jobId: Job to set number for
-            numberOfErrors: Number to be set
-            errorType: Type of error to set, can be either 'fatal' or 'warning'
-
-        """
+        """Deprecated: moved to sumNumberOfErrorsForJobList in function_bag.py."""
         job = self.getJobById(jobId)
         if errorType == "fatal":
             job.number_of_errors = numberOfErrors
@@ -388,3 +380,23 @@ class JobTrackerInterface(BaseInterface):
     def findGenerationTask(self, key):
         """ Given a key, return a file generation task """
         return self.session.query(FileGenerationTask).filter(FileGenerationTask.generation_task_key == key).first()
+
+    def checkJobType(self, jobId):
+        """ Job should be of type csv_record_validation, or this is the wrong service
+
+        Args:
+        jobId -- job ID to check
+
+        Returns:
+        True if correct type, False or exception otherwise
+        """
+        query = self.session.query(Job.job_type_id).filter(Job.job_id == jobId)
+        result = self.checkJobUnique(query)
+        if result.job_type_id == self.getJobTypeId("csv_record_validation") or result.job_type_id == self.getJobTypeId(
+                "validation"):
+            # Correct type
+            return result.job_type_id
+        else:
+            # Wrong type
+            raise ResponseException("Wrong type of job for this service", StatusCode.CLIENT_ERROR, None,
+                                    ValidationError.jobError)

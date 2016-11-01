@@ -97,7 +97,6 @@ class Appropriation(Base):
     sub_account_code = Column(Text)
     unobligated_balance_cpe = Column(Numeric)
     tas = Column(Text, index=True, nullable=False, default=concatTas, onupdate=concatTas)
-    is_first_quarter = Column(Boolean, nullable=False, default=False, server_default="False")
 
     def __init__(self, **kwargs):
         # broker is set up to ignore extra columns in submitted data
@@ -157,7 +156,6 @@ class ObjectClassProgramActivity(Base):
     ussgl498100_upward_adjustm_cpe = Column(Numeric)
     ussgl498200_upward_adjustm_cpe = Column(Numeric)
     tas = Column(Text, nullable=False, default=concatTas, onupdate=concatTas)
-    is_first_quarter = Column(Boolean, nullable=False, default=False, server_default="False")
 
     def __init__(self, **kwargs):
         # broker is set up to ignore extra columns in submitted data
@@ -228,7 +226,6 @@ class AwardFinancial(Base):
     ussgl498100_upward_adjustm_cpe = Column(Numeric)
     ussgl498200_upward_adjustm_cpe = Column(Numeric)
     tas = Column(Text, nullable=False, default=concatTas, onupdate=concatTas)
-    is_first_quarter = Column(Boolean, nullable=False, default=False, server_default="False")
 
     def __init__(self, **kwargs):
         # broker is set up to ignore extra columns in submitted data
@@ -243,7 +240,7 @@ Index("ix_award_financial_tas_oc_pa",
       unique=False)
 
 class AwardFinancialAssistance(Base):
-    """Model for the award_financial_assistance table."""
+    """Model for D2-Award (Financial Assistance)."""
     __tablename__ = "award_financial_assistance"
 
     award_financial_assistance_id = Column(Integer, primary_key=True)
@@ -310,7 +307,6 @@ class AwardFinancialAssistance(Base):
     sai_number = Column(Text)
     total_funding_amount = Column(Text)
     uri = Column(Text, index=True)
-    is_first_quarter = Column(Boolean, nullable=False, default=False, server_default="False")
 
     def __init__(self, **kwargs):
         # broker is set up to ignore extra columns in submitted data
@@ -319,7 +315,7 @@ class AwardFinancialAssistance(Base):
         super(AwardFinancialAssistance, self).__init__(**cleanKwargs)
 
 class AwardProcurement(Base):
-    """ Model for D1 award procurement records """
+    """Model for D1-Award (Procurement)."""
     __tablename__ = "award_procurement"
     award_procurement_id = Column(Integer, primary_key=True)
     submission_id = Column(Integer, nullable=False, index=True)

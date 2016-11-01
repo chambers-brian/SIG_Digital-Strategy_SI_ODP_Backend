@@ -1,7 +1,7 @@
 from decimal import *
 from dataactcore.models.validationModels import RuleSql
 from dataactvalidator.validation_handlers.validationError import ValidationError
-from dataactvalidator.interfaces.interfaceHolder import InterfaceHolder
+from dataactcore.interfaces.interfaceHolder import InterfaceHolder
 from dataactcore.utils.cloudLogger import CloudLogger
 
 class Validator(object):
@@ -11,7 +11,7 @@ class Validator(object):
     BOOLEAN_VALUES = ["TRUE","FALSE","YES","NO","1","0"]
     tableAbbreviations = {"appropriations":"approp","award_financial_assistance":"afa","award_financial":"af","object_class_program_activity":"op","appropriation":"approp"}
     # Set of metadata fields that should not be directly validated
-    META_FIELDS = ["row_number", "is_first_quarter"]
+    META_FIELDS = ["row_number"]
 
     @classmethod
     def crossValidateSql(cls, rules, submissionId):
@@ -43,13 +43,13 @@ class Validator(object):
                     values = ", ".join(values)
                     targetFileType = interfaces.validationDb.getFileTypeById(rule.target_file_id)
                     failures.append([rule.file.name, targetFileType, columnString,
-                        str(rule.rule_description), values, row['row_number'],str(rule.rule_label),rule.file_id,rule.target_file_id,rule.rule_severity_id])
+                        str(rule.rule_error_message), values, row['row_number'],str(rule.rule_label),rule.file_id,rule.target_file_id,rule.rule_severity_id])
 
         # Return list of cross file validation failures
         return failures
 
     @classmethod
-    def validate(cls,record,csvSchema, fileType, interfaces):
+    def validate(cls, record, csvSchema):
         """
         Run initial set of single file validation:
         - check if required fields are present
@@ -59,7 +59,6 @@ class Validator(object):
         Args:
         record -- dict representation of a single record of data
         csvSchema -- dict of schema for the current file.
-        fileType -- name of file type to check against
 
         Returns:
         Tuple of three values:
