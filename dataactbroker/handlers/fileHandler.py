@@ -39,8 +39,8 @@ class FileHandler:
     s3manager -- instance of s3UrlHandler, manages calls to S3
     """
 
-    FILE_TYPES = ["appropriations","award_financial","program_activity", "derivative","non_derivative"]
-    EXTERNAL_FILE_TYPES = ["award", "award_procurement", "awardee_attributes", "sub_award"]
+    FILE_TYPES = ["derivative","non_derivative"]
+    EXTERNAL_FILE_TYPES = []
     VALIDATOR_RESPONSE_FILE = "validatorResponse"
     STATUS_MAP = {"waiting":"invalid", "ready":"invalid", "running":"waiting", "finished":"finished", "invalid":"failed", "failed":"failed"}
     VALIDATION_STATUS_MAP = {"waiting":"waiting", "ready":"waiting", "running":"waiting", "finished":"finished", "failed":"failed", "invalid":"failed"}
